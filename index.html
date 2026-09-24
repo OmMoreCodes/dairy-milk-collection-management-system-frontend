@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Dairy Milk Collection Management System - record daily milk collections, manage farmers, milk rates and payments, and generate reports." />
+  <title>Dairy Milk Collection Management System</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="public-body">
+
+  <!-- Navbar: app name + Register button + Login link only (no app navigation) -->
+  <nav class="landing-nav">
+    <div class="landing-brand">
+      <span class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.7s6 6.3 6 10.8a6 6 0 1 1-12 0C6 9 12 2.7 12 2.7z"/></svg>
+      </span>
+      <span>Dairy Milk Collection<br />Management System</span>
+    </div>
+    <div class="landing-nav-links">
+      <a class="login-link" href="login.html">Login</a>
+      <a class="btn btn-primary" href="register.html">Register</a>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <header class="hero">
+    <div>
+      <span class="hero-kicker">Built for village dairy operators</span>
+      <h1>Every liter of milk, <em>recorded and paid</em> accurately.</h1>
+      <p class="hero-sub">
+        Replace paper registers with a simple digital system. Record morning and evening
+        collections per farmer, apply milk-type rates with fat and SNF quality checks,
+        and generate daily, monthly and farmer-wise payment reports in seconds.
+      </p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="register.html">Register Your Dairy</a>
+        <span class="hero-login-note">Already have an account? <a href="login.html">Login</a></span>
+      </div>
+    </div>
+    <div class="hero-visual" aria-hidden="true">
+      <svg width="380" height="300" viewBox="0 0 380 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="30" y="90" width="130" height="120" rx="14" fill="#ffffff" stroke="#d7e5dd" stroke-width="2"/>
+        <rect x="30" y="90" width="130" height="34" rx="14" fill="#1a7f4e"/>
+        <rect x="30" y="112" width="130" height="12" fill="#1a7f4e"/>
+        <circle cx="95" cy="70" r="16" fill="#e8f5ef" stroke="#bfe3d0" stroke-width="2"/>
+        <path d="M95 62s5.5 5.8 5.5 9.9a5.5 5.5 0 1 1-11 0C89.5 67.8 95 62 95 62z" fill="#1a7f4e"/>
+        <rect x="52" y="140" width="86" height="9" rx="4.5" fill="#e2ece7"/>
+        <rect x="52" y="158" width="62" height="9" rx="4.5" fill="#e2ece7"/>
+        <rect x="52" y="176" width="74" height="9" rx="4.5" fill="#f4a716" opacity="0.75"/>
+        <rect x="52" y="194" width="50" height="9" rx="4.5" fill="#e2ece7"/>
+        <rect x="205" y="55" width="145" height="170" rx="16" fill="#ffffff" stroke="#d7e5dd" stroke-width="2"/>
+        <text x="228" y="92" font-family="Segoe UI, Arial, sans-serif" font-size="14" font-weight="700" fill="#0f3524">Today</text>
+        <rect x="222" y="104" width="112" height="30" rx="8" fill="#f3faf6"/>
+        <text x="232" y="124" font-family="Segoe UI, Arial, sans-serif" font-size="11.5" fill="#6b7280">Today's Liters</text>
+        <text x="322" y="125" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="800" fill="#1a7f4e" text-anchor="end">412.5</text>
+        <rect x="222" y="142" width="112" height="30" rx="8" fill="#f3faf6"/>
+        <text x="232" y="162" font-family="Segoe UI, Arial, sans-serif" font-size="11.5" fill="#6b7280">Collections</text>
+        <text x="322" y="163" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="800" fill="#1a7f4e" text-anchor="end">26</text>
+        <rect x="222" y="180" width="112" height="30" rx="8" fill="#fdf6e8"/>
+        <text x="232" y="200" font-family="Segoe UI, Arial, sans-serif" font-size="11.5" fill="#6b7280">Amount</text>
+        <text x="322" y="201" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="800" fill="#b45309" text-anchor="end">Rs. 14,830</text>
+        <rect x="150" y="240" width="84" height="36" rx="10" fill="#0f3524"/>
+        <text x="192" y="263" font-family="Segoe UI, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#ffffff" text-anchor="middle">PDF / Excel</text>
+        <path d="M40 262h74" stroke="#cfe3d8" stroke-width="3" stroke-linecap="round" stroke-dasharray="6 8"/>
+        <path d="M268 262h74" stroke="#cfe3d8" stroke-width="3" stroke-linecap="round" stroke-dasharray="6 8"/>
+      </svg>
+    </div>
+  </header>
+
+  <!-- Features: 6 cards -->
+  <section class="section section-alt" id="features">
+    <div class="section-head">
+      <h2>Everything a dairy collection center needs</h2>
+      <p>Six focused modules that cover the daily milk collection workflow from farmer to final payment.</p>
+    </div>
+    <div class="features-grid">
+      <article class="feature-card">
+        <span class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/></svg></span>
+        <h3>Farmer Management</h3>
+        <p>Add farmers with unique IDs, village and contact details. Search instantly and deactivate farmers who stop supplying.</p>
+      </article>
+      <article class="feature-card">
+        <span class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.7s6 6.3 6 10.8a6 6 0 1 1-12 0C6 9 12 2.7 12 2.7z"/></svg></span>
+        <h3>Daily Milk Collection</h3>
+        <p>Record morning and evening collections per farmer with liters, fat and SNF quality parameters for cow and buffalo milk.</p>
+      </article>
+      <article class="feature-card">
+        <span class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 13.3l-7.2 7.2a2 2 0 0 1-2.8 0L3 12.9V3h9.9l7.7 7.7a2 2 0 0 1 0 2.6z"/><circle cx="7.5" cy="7.5" r="1.2"/></svg></span>
+        <h3>Milk Rate &amp; Payment</h3>
+        <p>Set per-liter rates for cow and buffalo milk with effective dates. Every entry stores its own rate, so payments never change retroactively.</p>
+      </article>
+      <article class="feature-card">
+        <span class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></span>
+        <h3>Collection History</h3>
+        <p>Browse every past entry with filters for date range, shift, milk type and farmer. Totals for liters and amount are always in view.</p>
+      </article>
+      <article class="feature-card">
+        <span class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/></svg></span>
+        <h3>Reports</h3>
+        <p>Daily summaries, month-wise farmer totals, custom date ranges and per-farmer statements - calculated straight from your data.</p>
+      </article>
+      <article class="feature-card">
+        <span class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8"/><path d="M8 17h8"/></svg></span>
+        <h3>PDF &amp; Excel Export</h3>
+        <p>Download any report as a clean PDF, or export full collection data to Excel for accounting, sharing and backup.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- Workflow -->
+  <section class="section" id="workflow">
+    <div class="section-head">
+      <h2>From signup to settlement in five steps</h2>
+      <p>The same flow a dairy operator follows every day, mirrored exactly by the application.</p>
+    </div>
+    <div class="workflow-steps">
+      <div class="workflow-step">
+        <h4>Register</h4>
+        <p>Create your dairy account in under a minute.</p>
+      </div>
+      <div class="workflow-step">
+        <h4>Add Farmers</h4>
+        <p>Register every supplying farmer with a unique ID.</p>
+      </div>
+      <div class="workflow-step">
+        <h4>Record Milk</h4>
+        <p>Enter liters, fat and SNF for each shift.</p>
+      </div>
+      <div class="workflow-step">
+        <h4>Track Collection</h4>
+        <p>Review history and totals any time.</p>
+      </div>
+      <div class="workflow-step">
+        <h4>Generate Reports</h4>
+        <p>Daily, monthly, range and statement exports.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-band">
+    <h2>Start managing your dairy digitally today</h2>
+    <p>Free to set up. No training needed - if you can use a paper register, you can use this.</p>
+    <a class="btn" href="register.html">Register Your Dairy</a>
+    <p class="cta-login-note">Already registered? <a href="login.html">Login to your dairy</a></p>
+  </section>
+
+  <!-- Footer -->
+  <footer class="landing-footer">
+    <div class="footer-brand">Dairy Milk Collection Management System</div>
+    <p>A simple web application for dairy operators to record daily milk collections from farmers, manage milk rates, calculate payments and generate printable reports.</p>
+    <p class="footer-copy">&copy; 2026 Dairy Milk Collection Management System. All rights reserved.</p>
+  </footer>
+
+</body>
+</html>
