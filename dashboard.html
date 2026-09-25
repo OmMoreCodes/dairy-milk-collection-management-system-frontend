@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Dashboard - today's milk collection summary." />
+  <title>Dashboard - Dairy Milk Collection Management System</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="app-body" data-page="dashboard">
+
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <div class="main">
+    <header class="topbar" id="topbar"></header>
+
+    <main class="content">
+      <div class="content-toolbar">
+        <div>
+          <h2 id="greeting">Welcome back</h2>
+          <p id="todayLine">Today</p>
+        </div>
+      </div>
+
+      <div class="stat-grid" id="statGrid">
+        <div class="stat-card">
+          <span class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.7s6 6.3 6 10.8a6 6 0 1 1-12 0C6 9 12 2.7 12 2.7z"/></svg></span>
+          <div>
+            <div class="stat-label">Today's Liters</div>
+            <div class="stat-value" id="statLiters">--</div>
+            <div class="stat-sub">morning + evening shifts</div>
+          </div>
+        </div>
+        <div class="stat-card stat-info">
+          <span class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span>
+          <div>
+            <div class="stat-label">Today's Collections</div>
+            <div class="stat-value" id="statCollections">--</div>
+            <div class="stat-sub">entries recorded today</div>
+          </div>
+        </div>
+        <div class="stat-card stat-accent">
+          <span class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 13.3l-7.2 7.2a2 2 0 0 1-2.8 0L3 12.9V3h9.9l7.7 7.7a2 2 0 0 1 0 2.6z"/><circle cx="7.5" cy="7.5" r="1.2"/></svg></span>
+          <div>
+            <div class="stat-label">Today's Amount</div>
+            <div class="stat-value" id="statAmount">--</div>
+            <div class="stat-sub">payable to farmers</div>
+          </div>
+        </div>
+        <div class="stat-card stat-danger">
+          <span class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/></svg></span>
+          <div>
+            <div class="stat-label">Active Farmers</div>
+            <div class="stat-value" id="statFarmers">--</div>
+            <div class="stat-sub" id="statFarmersSub">currently supplying</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-24" id="hintCard"></div>
+    </main>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/common.js"></script>
+  <script>
+    // Dashboard logic lives here because the specification defines no js/dashboard.js.
+    document.addEventListener('DOMContentLoaded', async () => {
+      if (!requireAuth()) return;
+      initShell('dashboard');
+
+      const user = getStoredUser() || {};
+      const hour = new Date().getHours();
+      const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+      document.getElementById('greeting').textContent = greeting + ', ' + (user.name || 'Dairy Operator');
+      document.getElementById('todayLine').textContent =
+        new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+
+      try {
+        const [collections, farmers] = await Promise.all([
+          apiFetch('/api/collections?date=' + todayISO()),
+          apiFetch('/api/farmers')
+        ]);
+
+        const totalLiters = collections.reduce((sum, c) => sum + c.liters, 0);
+        const totalAmount = collections.reduce((sum, c) => sum + c.amount, 0);
+        const activeFarmers = farmers.filter((f) => f.status === 'active').length;
+
+        document.getElementById('statLiters').textContent = fmtNumber(totalLiters) + ' L';
+        document.getElementById('statCollections').textContent = String(collections.length);
+        document.getElementById('statAmount').textContent = fmtAmount(totalAmount);
+        document.getElementById('statFarmers').textContent = String(activeFarmers);
+        document.getElementById('statFarmersSub').textContent =
+          'of ' + farmers.length + ' registered farmers';
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    });
+  </script>
+</body>
+</html>
