@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Add, search, edit and deactivate farmers." />
+  <title>Farmers - Dairy Milk Collection Management System</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="app-body" data-page="farmers">
+
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <div class="main">
+    <header class="topbar" id="topbar"></header>
+
+    <main class="content">
+      <div class="content-toolbar">
+        <div>
+          <h2>Farmers</h2>
+          <p>Register every supplying farmer with a unique ID.</p>
+        </div>
+        <button type="button" class="btn btn-primary" id="addFarmerBtn">Add Farmer</button>
+      </div>
+
+      <div class="stat-grid mb-20" id="farmerStats">
+        <div class="stat-card">
+          <span class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/></svg></span>
+          <div><div class="stat-label">Total Farmers</div><div class="stat-value" id="statTotal">--</div></div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>
+          <div><div class="stat-label">Active</div><div class="stat-value" id="statActive">--</div></div>
+        </div>
+        <div class="stat-card stat-danger">
+          <span class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M15 9l-6 6"/><path d="M9 9l6 6"/></svg></span>
+          <div><div class="stat-label">Inactive</div><div class="stat-value" id="statInactive">--</div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h2>Farmer List</h2>
+          <div class="form-group" style="margin:0; min-width: 260px;">
+            <input type="search" id="searchInput" class="form-control" placeholder="Search by ID, name, village or phone" />
+          </div>
+        </div>
+        <div class="card-body" style="padding-top: 12px;">
+          <div class="table-wrap">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Farmer ID</th>
+                  <th>Name</th>
+                  <th>Phone</th>
+                  <th>Village</th>
+                  <th>Address</th>
+                  <th>Status</th>
+                  <th class="actions-cell">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="farmersTableBody">
+                <tr><td colspan="7" class="loading-row">Loading farmers...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Add / Edit modal -->
+  <div class="modal hidden" id="farmerModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="farmerModalTitle">Add Farmer</h3>
+        <button type="button" class="modal-close" id="farmerModalClose" aria-label="Close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="farmerForm" novalidate>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="mFarmerId">Farmer ID</label>
+              <input type="text" id="mFarmerId" class="form-control" placeholder="e.g. F-001" required />
+              <p class="form-hint">Unique within your dairy.</p>
+            </div>
+            <div class="form-group">
+              <label for="mName">Name</label>
+              <input type="text" id="mName" class="form-control" placeholder="Farmer's full name" required />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="mPhone">Phone</label>
+              <input type="tel" id="mPhone" class="form-control" placeholder="e.g. 9876543210" required />
+            </div>
+            <div class="form-group">
+              <label for="mVillage">Village</label>
+              <input type="text" id="mVillage" class="form-control" placeholder="e.g. Rampur" required />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="mAddress">Address</label>
+            <textarea id="mAddress" class="form-control" placeholder="Full address" required></textarea>
+          </div>
+          <div class="form-group" id="statusField" style="display: none;">
+            <label for="mStatus">Status</label>
+            <select id="mStatus" class="form-control">
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block" id="farmerFormSubmit">Save Farmer</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete confirmation modal -->
+  <div class="modal hidden" id="deleteModal">
+    <div class="modal-card" style="max-width: 420px;">
+      <div class="modal-header">
+        <h3>Delete Farmer</h3>
+        <button type="button" class="modal-close" id="deleteModalClose" aria-label="Close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="dialog-text" id="deleteModalText">Are you sure you want to delete this farmer?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" id="deleteCancelBtn">Cancel</button>
+        <button type="button" class="btn btn-danger" id="deleteConfirmBtn">Delete Farmer</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/farmers.js"></script>
+</body>
+</html>
