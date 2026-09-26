@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Browse milk collection history with filters." />
+  <title>Collection History - Dairy Milk Collection Management System</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="app-body" data-page="history">
+
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <div class="main">
+    <header class="topbar" id="topbar"></header>
+
+    <main class="content">
+      <div class="content-toolbar">
+        <div>
+          <h2>Collection History</h2>
+          <p>Every recorded milk collection, filterable by period, shift, milk type and farmer.</p>
+        </div>
+      </div>
+
+      <div class="card mb-20">
+        <div class="card-body">
+          <form id="historyFilterForm" class="filter-bar" novalidate>
+            <div class="form-group">
+              <label for="fromInput">From</label>
+              <input type="date" id="fromInput" class="form-control" required />
+            </div>
+            <div class="form-group">
+              <label for="toInput">To</label>
+              <input type="date" id="toInput" class="form-control" required />
+            </div>
+            <div class="form-group">
+              <label for="farmerFilter">Farmer</label>
+              <select id="farmerFilter" class="form-control">
+                <option value="">All farmers</option>
+              </select>
+            </div>
+            <div class="form-group" style="min-width: 130px;">
+              <label for="shiftFilter">Shift</label>
+              <select id="shiftFilter" class="form-control">
+                <option value="">All shifts</option>
+                <option value="Morning">Morning</option>
+                <option value="Evening">Evening</option>
+              </select>
+            </div>
+            <div class="form-group" style="min-width: 130px;">
+              <label for="milkTypeFilter">Milk Type</label>
+              <select id="milkTypeFilter" class="form-control">
+                <option value="">All types</option>
+                <option value="Cow">Cow</option>
+                <option value="Buffalo">Buffalo</option>
+              </select>
+            </div>
+            <div class="filter-actions">
+              <button type="submit" class="btn btn-primary">Apply Filters</button>
+              <button type="button" class="btn btn-ghost" id="clearFiltersBtn">Clear</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h2>Results</h2>
+          <span class="muted small" id="historyCount"></span>
+        </div>
+        <div class="card-body" style="padding-top: 12px;">
+          <div class="table-wrap">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Farmer</th>
+                  <th>Shift</th>
+                  <th>Type</th>
+                  <th class="num">Liters</th>
+                  <th class="num">Fat %</th>
+                  <th class="num">SNF %</th>
+                  <th class="num">Rate</th>
+                  <th class="num">Amount</th>
+                </tr>
+              </thead>
+              <tbody id="historyTableBody">
+                <tr><td colspan="9" class="loading-row">Loading...</td></tr>
+              </tbody>
+              <tfoot id="historyTableFoot" style="display: none;">
+                <tr>
+                  <td colspan="4">Total</td>
+                  <td class="num" id="historyTotalLiters"></td>
+                  <td colspan="3"></td>
+                  <td class="num" id="historyTotalAmount"></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/history.js"></script>
+</body>
+</html>
