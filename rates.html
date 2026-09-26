@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Manage milk rates per milk type with effective dates." />
+  <title>Milk Rates - Dairy Milk Collection Management System</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="app-body" data-page="rates">
+
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <div class="main">
+    <header class="topbar" id="topbar"></header>
+
+    <main class="content">
+      <div class="content-toolbar">
+        <div>
+          <h2>Milk Rates</h2>
+          <p>New collections use the latest rate. Past entries keep the rate they were saved with.</p>
+        </div>
+      </div>
+
+      <div class="stat-grid mb-24" id="currentRateCards">
+        <div class="stat-card">
+          <span class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg></span>
+          <div>
+            <div class="stat-label">Current Cow Milk Rate</div>
+            <div class="stat-value" id="cowRateValue">--</div>
+            <div class="stat-sub" id="cowRateSub">No rate set yet</div>
+          </div>
+        </div>
+        <div class="stat-card stat-accent">
+          <span class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg></span>
+          <div>
+            <div class="stat-label">Current Buffalo Milk Rate</div>
+            <div class="stat-value" id="buffaloRateValue">--</div>
+            <div class="stat-sub" id="buffaloRateSub">No rate set yet</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mb-24">
+        <div class="card-header">
+          <h2>Add New Rate</h2>
+          <p class="small muted" style="margin:0;">Existing rates are kept as history.</p>
+        </div>
+        <div class="card-body">
+          <form id="rateForm" novalidate>
+            <div class="form-row" style="grid-template-columns: 1fr 1fr 1fr; align-items: end;">
+              <div class="form-group">
+                <label for="milkTypeInput">Milk Type</label>
+                <select id="milkTypeInput" class="form-control" required>
+                  <option value="Cow">Cow</option>
+                  <option value="Buffalo">Buffalo</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="rateInput">Rate (per liter)</label>
+                <input type="number" id="rateInput" class="form-control" placeholder="e.g. 32.50" step="0.01" min="0.01" required />
+              </div>
+              <div class="form-group">
+                <label for="effectiveFromInput">Effective From</label>
+                <input type="date" id="effectiveFromInput" class="form-control" required />
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary" id="rateSubmitBtn">Save Rate</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h2>Rate History</h2>
+          <span class="muted small" id="rateHistoryCount"></span>
+        </div>
+        <div class="card-body" style="padding-top: 12px;">
+          <div class="table-wrap">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Milk Type</th>
+                  <th class="num">Rate (per liter)</th>
+                  <th>Effective From</th>
+                  <th>Added On</th>
+                  <th class="actions-cell">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="ratesTableBody">
+                <tr><td colspan="5" class="loading-row">Loading...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Edit rate modal -->
+  <div class="modal hidden" id="rateModal">
+    <div class="modal-card" style="max-width: 430px;">
+      <div class="modal-header">
+        <h3>Edit Rate</h3>
+        <button type="button" class="modal-close" id="rateModalClose" aria-label="Close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="rateEditForm" novalidate>
+          <div class="form-group">
+            <label for="editMilkType">Milk Type</label>
+            <select id="editMilkType" class="form-control">
+              <option value="Cow">Cow</option>
+              <option value="Buffalo">Buffalo</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="editRate">Rate (per liter)</label>
+            <input type="number" id="editRate" class="form-control" step="0.01" min="0.01" required />
+          </div>
+          <div class="form-group">
+            <label for="editEffectiveFrom">Effective From</label>
+            <input type="date" id="editEffectiveFrom" class="form-control" required />
+          </div>
+          <p class="form-hint mb-16">Editing a rate only corrects this rate entry - it never changes amounts already recorded.</p>
+          <button type="submit" class="btn btn-primary btn-block" id="rateEditSubmitBtn">Save Changes</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/rates.js"></script>
+</body>
+</html>
