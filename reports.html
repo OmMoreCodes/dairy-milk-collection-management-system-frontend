@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Generate daily, monthly, date range and farmer statement reports with PDF and Excel export." />
+  <title>Reports - Dairy Milk Collection Management System</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="app-body" data-page="reports">
+
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <div class="main">
+    <header class="topbar" id="topbar"></header>
+
+    <main class="content">
+      <div class="content-toolbar">
+        <div>
+          <h2>Reports</h2>
+          <p>Daily, monthly, date range and farmer statement reports - exportable as PDF and Excel.</p>
+        </div>
+      </div>
+
+      <div class="tabs" role="tablist">
+        <button type="button" class="tab-btn active" data-tab="daily" role="tab">Daily</button>
+        <button type="button" class="tab-btn" data-tab="monthly" role="tab">Monthly</button>
+        <button type="button" class="tab-btn" data-tab="range" role="tab">Date Range</button>
+        <button type="button" class="tab-btn" data-tab="statement" role="tab">Farmer Statement</button>
+      </div>
+
+      <!-- Daily report -->
+      <section class="tab-panel" id="panel-daily">
+        <div class="card mb-20">
+          <div class="card-body">
+            <form class="filter-bar" id="dailyForm" novalidate>
+              <div class="form-group">
+                <label for="dailyDate">Date</label>
+                <input type="date" id="dailyDate" class="form-control" required />
+              </div>
+              <div class="filter-actions">
+                <button type="submit" class="btn btn-primary">Generate</button>
+                <button type="button" class="btn btn-outline" id="dailyPdfBtn">Export PDF</button>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div id="dailyResult"></div>
+      </section>
+
+      <!-- Monthly report -->
+      <section class="tab-panel hidden" id="panel-monthly">
+        <div class="card mb-20">
+          <div class="card-body">
+            <form class="filter-bar" id="monthlyForm" novalidate>
+              <div class="form-group">
+                <label for="monthlyMonth">Month</label>
+                <select id="monthlyMonth" class="form-control" required></select>
+              </div>
+              <div class="form-group" style="min-width: 120px;">
+                <label for="monthlyYear">Year</label>
+                <input type="number" id="monthlyYear" class="form-control" min="1900" max="2100" required />
+              </div>
+              <div class="filter-actions">
+                <button type="submit" class="btn btn-primary">Generate</button>
+                <button type="button" class="btn btn-outline" id="monthlyPdfBtn">Export PDF</button>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div id="monthlyResult"></div>
+      </section>
+
+      <!-- Date range report -->
+      <section class="tab-panel hidden" id="panel-range">
+        <div class="card mb-20">
+          <div class="card-body">
+            <form class="filter-bar" id="rangeForm" novalidate>
+              <div class="form-group">
+                <label for="rangeFrom">From</label>
+                <input type="date" id="rangeFrom" class="form-control" required />
+              </div>
+              <div class="form-group">
+                <label for="rangeTo">To</label>
+                <input type="date" id="rangeTo" class="form-control" required />
+              </div>
+              <div class="filter-actions">
+                <button type="submit" class="btn btn-primary">Generate</button>
+                <button type="button" class="btn btn-outline" id="rangePdfBtn">Export PDF</button>
+                <button type="button" class="btn btn-ghost" id="rangeExcelBtn">Export Excel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div id="rangeResult"></div>
+      </section>
+
+      <!-- Farmer statement -->
+      <section class="tab-panel hidden" id="panel-statement">
+        <div class="card mb-20">
+          <div class="card-body">
+            <form class="filter-bar" id="statementForm" novalidate>
+              <div class="form-group" style="min-width: 240px;">
+                <label for="statementFarmer">Farmer</label>
+                <select id="statementFarmer" class="form-control" required>
+                  <option value="">Select a farmer</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="statementFrom">From</label>
+                <input type="date" id="statementFrom" class="form-control" required />
+              </div>
+              <div class="form-group">
+                <label for="statementTo">To</label>
+                <input type="date" id="statementTo" class="form-control" required />
+              </div>
+              <div class="filter-actions">
+                <button type="submit" class="btn btn-primary">Generate</button>
+                <button type="button" class="btn btn-outline" id="statementPdfBtn">Export PDF</button>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div id="statementResult"></div>
+      </section>
+    </main>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/reports.js"></script>
+</body>
+</html>
