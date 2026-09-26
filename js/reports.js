@@ -1,13 +1,11 @@
-// Reports page: Daily, Monthly, Date Range and Farmer Statement tabs.
-// Every report can be exported as PDF; the date range report also exports
-// to Excel.
+// Reports page: Daily, Monthly and Date Range tabs. Every report can be
+// exported as PDF; the date range report also exports to Excel. The farmer
+// statement lives on its own dedicated page (statement.html / js/statement.js).
 
 const MONTH_NAMES = [
   'January', 'February', 'March', 'April', 'May', 'June',
   'July', 'August', 'September', 'October', 'November', 'December'
 ];
-
-let statementFarmers = [];
 
 document.addEventListener('DOMContentLoaded', () => {
   if (!requireAuth()) return;
@@ -23,8 +21,6 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('monthlyYear').value = String(now.getFullYear());
   document.getElementById('rangeFrom').value = monthStartISO();
   document.getElementById('rangeTo').value = todayISO();
-  document.getElementById('statementFrom').value = monthStartISO();
-  document.getElementById('statementTo').value = todayISO();
 
   // Tab switching.
   document.querySelectorAll('.tab-btn').forEach((button) => {
@@ -40,7 +36,6 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('dailyForm').addEventListener('submit', (e) => { e.preventDefault(); generateDaily(); });
   document.getElementById('monthlyForm').addEventListener('submit', (e) => { e.preventDefault(); generateMonthly(); });
   document.getElementById('rangeForm').addEventListener('submit', (e) => { e.preventDefault(); generateRange(); });
-  document.getElementById('statementForm').addEventListener('submit', (e) => { e.preventDefault(); generateStatement(); });
 
   // Exports.
   document.getElementById('dailyPdfBtn').addEventListener('click', () =>
@@ -58,19 +53,6 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('rangeExcelBtn').addEventListener('click', () =>
     exportWithValidation('/api/exports/excel?from=' + document.getElementById('rangeFrom').value +
       '&to=' + document.getElementById('rangeTo').value, 'milk-collections.xlsx', () => validateRangeInputs('rangeFrom', 'rangeTo')));
-
-  document.getElementById('statementPdfBtn').addEventListener('click', () => {
-    const farmerId = document.getElementById('statementFarmer').value;
-    const from = document.getElementById('statementFrom').value;
-    const to = document.getElementById('statementTo').value;
-    exportWithValidation(
-      '/api/exports/pdf/statement?farmerId=' + farmerId + '&from=' + from + '&to=' + to,
-      'farmer-statement.pdf',
-      () => !!farmerId && !!from && !!to && from <= to
-    );
-  });
-
-  loadStatementFarmers();
 });
 
 async function exportWithValidation(url, fallbackFilename, validate) {
@@ -96,24 +78,6 @@ function validateRangeInputs(fromId, toId) {
   const from = document.getElementById(fromId).value;
   const to = document.getElementById(toId).value;
   return !!from && !!to && from <= to;
-}
-
-async function loadStatementFarmers() {
-  try {
-    statementFarmers = await apiFetch('/api/farmers');
-    const select = document.getElementById('statementFarmer');
-    select.innerHTML =
-      '<option value="">Select a farmer</option>' +
-      statementFarmers
-        .slice()
-        .sort((a, b) => a.name.localeCompare(b.name))
-        .map((f) =>
-          '<option value="' + f._id + '">' + escapeHtml(f.farmerId + ' - ' + f.name) + '</option>'
-        )
-        .join('');
-  } catch (err) {
-    showToast(err.message, 'error');
-  }
 }
 
 /* ------------------------------------------------------------------- shared */
@@ -277,69 +241,6 @@ async function generateRange() {
       '<tbody>' + rows + '</tbody>' +
       '<tfoot><tr><td colspan="4">Total</td><td class="num">' + fmtNumber(data.summary.totalLiters) + '</td>' +
       '<td></td><td class="num">' + fmtAmount(data.summary.totalAmount) + '</td></tr></tfoot>' +
-      '</table></div></div></div>';
-  } catch (err) {
-    result.innerHTML = emptyCard(err.message);
-    showToast(err.message, 'error');
-  }
-}
-
-/* ---------------------------------------------------------------- statement */
-
-async function generateStatement() {
-  const result = document.getElementById('statementResult');
-  result.innerHTML = '<div class="card"><div class="card-body"><p class="loading-row">Generating statement...</p></div></div>';
-
-  const farmerId = document.getElementById('statementFarmer').value;
-  const from = document.getElementById('statementFrom').value;
-  const to = document.getElementById('statementTo').value;
-
-  if (!farmerId) {
-    result.innerHTML = emptyCard('Please select a farmer.');
-    return;
-  }
-
-  try {
-    const data = await apiFetch('/api/reports/statement?farmerId=' + farmerId + '&from=' + from + '&to=' + to);
-
-    if (!data.records.length) {
-      result.innerHTML = emptyCard(
-        'No collections found for ' + data.farmer.name + ' between ' + fmtDate(from) + ' and ' + fmtDate(to) + '.'
-      );
-      return;
-    }
-
-    const rows = data.records.map((r) =>
-      '<tr>' +
-      '<td>' + fmtDate(r.date) + '</td>' +
-      '<td><span class="badge badge-' + r.shift.toLowerCase() + '">' + r.shift + '</span></td>' +
-      '<td><span class="badge badge-' + r.milkType.toLowerCase() + '">' + r.milkType + '</span></td>' +
-      '<td class="num">' + fmtNumber(r.liters) + '</td>' +
-      '<td class="num">' + fmtNumber(r.fat) + '</td>' +
-      '<td class="num">' + fmtNumber(r.snf) + '</td>' +
-      '<td class="num">' + fmtNumber(r.rate) + '</td>' +
-      '<td class="num">' + fmtAmount(r.amount) + '</td>' +
-      '</tr>'
-    ).join('');
-
-    result.innerHTML =
-      '<div class="card mb-20"><div class="card-body">' +
-      '<h3 style="font-size:16px;">' + escapeHtml(data.farmer.name) + ' (' + escapeHtml(data.farmer.farmerId) + ')</h3>' +
-      '<p class="small muted">Village: ' + escapeHtml(data.farmer.village) + ' &nbsp;|&nbsp; Phone: ' + escapeHtml(data.farmer.phone) +
-      ' &nbsp;|&nbsp; Period: ' + fmtDate(data.from) + ' to ' + fmtDate(data.to) + '</p>' +
-      '</div></div>' +
-      summaryStrip([
-        { label: 'Collections', value: String(data.summary.collectionCount) },
-        { label: 'Total Liters', value: fmtNumber(data.summary.totalLiters) + ' L' },
-        { label: 'Total Amount', value: fmtAmount(data.summary.totalAmount) }
-      ]) +
-      '<div class="card"><div class="card-header"><h2>Collection Records</h2></div>' +
-      '<div class="card-body" style="padding-top:12px;"><div class="table-wrap"><table class="table">' +
-      '<thead><tr><th>Date</th><th>Shift</th><th>Type</th><th class="num">Liters</th>' +
-      '<th class="num">Fat %</th><th class="num">SNF %</th><th class="num">Rate</th><th class="num">Amount</th></tr></thead>' +
-      '<tbody>' + rows + '</tbody>' +
-      '<tfoot><tr><td colspan="3">Total</td><td class="num">' + fmtNumber(data.summary.totalLiters) + '</td>' +
-      '<td colspan="3"></td><td class="num">' + fmtAmount(data.summary.totalAmount) + '</td></tr></tfoot>' +
       '</table></div></div></div>';
   } catch (err) {
     result.innerHTML = emptyCard(err.message);

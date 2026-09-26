@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Generate daily, monthly, date range and farmer statement reports with PDF and Excel export." />
+  <meta name="description" content="Generate daily, monthly and date range reports with PDF and Excel export." />
   <title>Reports - Dairy Milk Collection Management System</title>
   <link rel="stylesheet" href="css/style.css" />
 </head>
@@ -18,7 +18,7 @@
       <div class="content-toolbar">
         <div>
           <h2>Reports</h2>
-          <p>Daily, monthly, date range and farmer statement reports - exportable as PDF and Excel.</p>
+          <p>Daily, monthly and date range reports - exportable as PDF and Excel. For a single farmer's statement, use the Statement page.</p>
         </div>
       </div>
 
@@ -26,7 +26,6 @@
         <button type="button" class="tab-btn active" data-tab="daily" role="tab">Daily</button>
         <button type="button" class="tab-btn" data-tab="monthly" role="tab">Monthly</button>
         <button type="button" class="tab-btn" data-tab="range" role="tab">Date Range</button>
-        <button type="button" class="tab-btn" data-tab="statement" role="tab">Farmer Statement</button>
       </div>
 
       <!-- Daily report -->
@@ -95,34 +94,6 @@
         <div id="rangeResult"></div>
       </section>
 
-      <!-- Farmer statement -->
-      <section class="tab-panel hidden" id="panel-statement">
-        <div class="card mb-20">
-          <div class="card-body">
-            <form class="filter-bar" id="statementForm" novalidate>
-              <div class="form-group" style="min-width: 240px;">
-                <label for="statementFarmer">Farmer</label>
-                <select id="statementFarmer" class="form-control" required>
-                  <option value="">Select a farmer</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label for="statementFrom">From</label>
-                <input type="date" id="statementFrom" class="form-control" required />
-              </div>
-              <div class="form-group">
-                <label for="statementTo">To</label>
-                <input type="date" id="statementTo" class="form-control" required />
-              </div>
-              <div class="filter-actions">
-                <button type="submit" class="btn btn-primary">Generate</button>
-                <button type="button" class="btn btn-outline" id="statementPdfBtn">Export PDF</button>
-              </div>
-            </form>
-          </div>
-        </div>
-        <div id="statementResult"></div>
-      </section>
     </main>
   </div>
 
