@@ -4,6 +4,56 @@
 const AUTH_TOKEN_KEY = 'token';
 const AUTH_USER_KEY = 'user';
 const AUTH_ORG_KEY = 'organization';
+const THEME_KEY = 'theme';
+
+/* ------------------------------------------------------------------- theme */
+
+// The light/dark choice is stored per browser in localStorage and applied by
+// setting data-theme="dark" on <html>. Every page also carries a tiny inline
+// snippet in <head> that applies the stored theme before first paint, so
+// there is no white flash when reloading in dark mode. The public landing
+// page intentionally stays in light mode.
+function getTheme() {
+  try {
+    return localStorage.getItem(THEME_KEY) === 'dark' ? 'dark' : 'light';
+  } catch {
+    return 'light';
+  }
+}
+
+function applyTheme(theme) {
+  const effective = theme === 'dark' ? 'dark' : 'light';
+  if (effective === 'dark') {
+    document.documentElement.setAttribute('data-theme', 'dark');
+  } else {
+    document.documentElement.removeAttribute('data-theme');
+  }
+  try {
+    localStorage.setItem(THEME_KEY, effective);
+  } catch {
+    /* storage unavailable - theme applies for this page only */
+  }
+}
+
+function toggleTheme() {
+  applyTheme(getTheme() === 'dark' ? 'light' : 'dark');
+}
+
+const THEME_ICONS = {
+  light:
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>',
+  dark:
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.9 4.9l1.4 1.4"/><path d="M17.7 17.7l1.4 1.4"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="M4.9 19.1l1.4-1.4"/><path d="M17.7 6.3l1.4-1.4"/></svg>'
+};
+
+function renderThemeToggleButton() {
+  const button = document.getElementById('themeToggleBtn');
+  if (!button) return;
+  const theme = getTheme();
+  button.innerHTML = THEME_ICONS[theme];
+  button.setAttribute('aria-label', theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme');
+  button.title = theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme';
+}
 
 /* ------------------------------------------------------------------ session */
 
@@ -208,7 +258,8 @@ const NAV_ICONS = {
   history: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>',
   rates: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 13.3l-7.2 7.2a2 2 0 0 1-2.8 0L3 12.9V3h9.9l7.7 7.7a2 2 0 0 1 0 2.6z"/><circle cx="7.5" cy="7.5" r="1.2"/></svg>',
   reports: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/></svg>',
-  statement: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8"/><path d="M8 17h8"/></svg>'
+  statement: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8"/><path d="M8 17h8"/></svg>',
+  profile: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/><circle cx="12" cy="8" r="8"/></svg>'
 };
 
 const NAV_ITEMS = [
@@ -218,7 +269,8 @@ const NAV_ITEMS = [
   { key: 'history', label: 'History', href: 'history.html' },
   { key: 'rates', label: 'Rates', href: 'rates.html' },
   { key: 'reports', label: 'Reports', href: 'reports.html' },
-  { key: 'statement', label: 'Statement', href: 'statement.html' }
+  { key: 'statement', label: 'Statement', href: 'statement.html' },
+  { key: 'profile', label: 'Profile', href: 'profile.html' }
 ];
 
 const PAGE_TITLES = {
@@ -228,7 +280,8 @@ const PAGE_TITLES = {
   history: 'Collection History',
   rates: 'Milk Rates',
   reports: 'Reports',
-  statement: 'Farmer Statement'
+  statement: 'Farmer Statement',
+  profile: 'My Profile'
 };
 
 // Renders the shared sidebar + topbar and wires the mobile menu and logout
@@ -266,9 +319,21 @@ function initShell(activeKey) {
     '<div class="topbar-title"><h1>' + (PAGE_TITLES[activeKey] || 'Dashboard') + '</h1>' +
     '<p class="topbar-sub">' + escapeHtml(organization.dairyName || '') + '</p></div>' +
     '<div class="topbar-user">' +
+    '<button type="button" class="theme-toggle" id="themeToggleBtn" aria-label="Toggle theme"></button>' +
     '<span class="topbar-avatar">' + escapeHtml((user.name || 'D').charAt(0).toUpperCase()) + '</span>' +
     '<span class="topbar-username">' + escapeHtml(user.name || 'Dairy Operator') + '</span>' +
     '</div>';
+
+  // Theme toggle: reflects the current theme and switches on click.
+  applyTheme(getTheme());
+  renderThemeToggleButton();
+  const themeToggleBtn = document.getElementById('themeToggleBtn');
+  if (themeToggleBtn) {
+    themeToggleBtn.addEventListener('click', () => {
+      toggleTheme();
+      renderThemeToggleButton();
+    });
+  }
 
   const menuBtn = document.getElementById('menuBtn');
   if (menuBtn) {

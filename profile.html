@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>try{if(localStorage.getItem('theme')==='dark')document.documentElement.setAttribute('data-theme','dark')}catch(e){}</script>
+  <meta name="description" content="Manage your operator account, dairy details and password." />
+  <title>My Profile - Dairy Milk Collection Management System</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="app-body" data-page="profile">
+
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <div class="main">
+    <header class="topbar" id="topbar"></header>
+
+    <main class="content">
+      <div class="content-toolbar">
+        <div>
+          <h2>My Profile</h2>
+          <p>Update your operator account, your dairy's details and your password.</p>
+        </div>
+      </div>
+
+      <form id="profileForm" novalidate>
+        <div class="card mb-20">
+          <div class="card-header">
+            <h2>My Details</h2>
+            <p>Your operator name and login email.</p>
+          </div>
+          <div class="card-body">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="operatorName">Your Name</label>
+                <input type="text" id="operatorName" class="form-control" placeholder="e.g. Ramesh Patel" required />
+              </div>
+              <div class="form-group">
+                <label for="operatorEmail">Email (Login)</label>
+                <input type="email" id="operatorEmail" class="form-control" placeholder="you@example.com" required />
+                <p class="form-hint">Used to login. The dairy's contact email stays the same.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card mb-20">
+          <div class="card-header">
+            <h2>Dairy Details</h2>
+            <p>Shown in the app, on reports and on exported PDFs.</p>
+          </div>
+          <div class="card-body">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="dairyName">Dairy Name</label>
+                <input type="text" id="dairyName" class="form-control" placeholder="e.g. Sunrise Dairy" required />
+              </div>
+              <div class="form-group">
+                <label for="ownerName">Owner Name</label>
+                <input type="text" id="ownerName" class="form-control" placeholder="e.g. Ramesh Patel" required />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="phone">Phone</label>
+                <input type="tel" id="phone" class="form-control" placeholder="e.g. 9876543210" required />
+              </div>
+              <div class="form-group">
+                <label for="address">Address</label>
+                <input type="text" id="address" class="form-control" placeholder="Village, Taluka, District" required />
+              </div>
+            </div>
+            <div class="filter-actions">
+              <button type="submit" class="btn btn-primary" id="saveProfileBtn">Save Changes</button>
+            </div>
+          </div>
+        </div>
+      </form>
+
+      <div class="card">
+        <div class="card-header">
+          <h2>Change Password</h2>
+          <p>Your new password must be at least 6 characters long.</p>
+        </div>
+        <div class="card-body">
+          <form id="passwordForm" novalidate>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="currentPassword">Current Password</label>
+                <input type="password" id="currentPassword" class="form-control" placeholder="Your current password" required />
+              </div>
+              <div class="form-group">
+                <label for="newPassword">New Password</label>
+                <input type="password" id="newPassword" class="form-control" placeholder="At least 6 characters" minlength="6" required />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="confirmPassword">Confirm New Password</label>
+                <input type="password" id="confirmPassword" class="form-control" placeholder="Repeat the new password" minlength="6" required />
+              </div>
+              <div class="form-group" style="display:flex; align-items:flex-end;">
+                <button type="submit" class="btn btn-primary" id="changePasswordBtn">Change Password</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/profile.js"></script>
+</body>
+</html>
