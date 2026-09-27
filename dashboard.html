@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>try{if(localStorage.getItem('theme')==='dark')document.documentElement.setAttribute('data-theme','dark')}catch(e){}</script>
   <meta name="description" content="Dashboard - today's milk collection summary." />
   <title>Dashboard - Dairy Milk Collection Management System</title>
   <link rel="stylesheet" href="css/style.css" />
@@ -23,7 +24,7 @@
       </div>
 
       <div class="stat-grid" id="statGrid">
-        <div class="stat-card">
+        <div class="stat-card stat-link" data-href="collection.html" tabindex="0" role="link" aria-label="Today's Liters - go to Collection">
           <span class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.7s6 6.3 6 10.8a6 6 0 1 1-12 0C6 9 12 2.7 12 2.7z"/></svg></span>
           <div>
             <div class="stat-label">Today's Liters</div>
@@ -31,7 +32,7 @@
             <div class="stat-sub">morning + evening shifts</div>
           </div>
         </div>
-        <div class="stat-card stat-info">
+        <div class="stat-card stat-info stat-link" data-href="history.html" tabindex="0" role="link" aria-label="Today's Collections - go to History">
           <span class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span>
           <div>
             <div class="stat-label">Today's Collections</div>
@@ -39,7 +40,7 @@
             <div class="stat-sub">entries recorded today</div>
           </div>
         </div>
-        <div class="stat-card stat-accent">
+        <div class="stat-card stat-accent stat-link" data-href="reports.html" tabindex="0" role="link" aria-label="Today's Amount - go to Reports">
           <span class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 13.3l-7.2 7.2a2 2 0 0 1-2.8 0L3 12.9V3h9.9l7.7 7.7a2 2 0 0 1 0 2.6z"/><circle cx="7.5" cy="7.5" r="1.2"/></svg></span>
           <div>
             <div class="stat-label">Today's Amount</div>
@@ -47,7 +48,7 @@
             <div class="stat-sub">payable to farmers</div>
           </div>
         </div>
-        <div class="stat-card stat-danger">
+        <div class="stat-card stat-danger stat-link" data-href="farmers.html" tabindex="0" role="link" aria-label="Active Farmers - go to Farmers">
           <span class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/></svg></span>
           <div>
             <div class="stat-label">Active Farmers</div>
@@ -68,6 +69,17 @@
     document.addEventListener('DOMContentLoaded', async () => {
       if (!requireAuth()) return;
       initShell('dashboard');
+
+      // Quick links: each stat card jumps to its related page.
+      document.querySelectorAll('.stat-card.stat-link').forEach((card) => {
+        card.addEventListener('click', () => { window.location.href = card.dataset.href; });
+        card.addEventListener('keydown', (event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            window.location.href = card.dataset.href;
+          }
+        });
+      });
 
       const user = getStoredUser() || {};
       const hour = new Date().getHours();
