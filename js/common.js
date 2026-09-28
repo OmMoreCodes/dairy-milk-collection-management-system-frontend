@@ -5,6 +5,7 @@ const AUTH_TOKEN_KEY = 'token';
 const AUTH_USER_KEY = 'user';
 const AUTH_ORG_KEY = 'organization';
 const THEME_KEY = 'theme';
+const FILTERS_KEY_PREFIX = 'filters:';
 
 /* ------------------------------------------------------------------- theme */
 
@@ -87,6 +88,63 @@ function clearSession() {
   localStorage.removeItem(AUTH_TOKEN_KEY);
   localStorage.removeItem(AUTH_USER_KEY);
   localStorage.removeItem(AUTH_ORG_KEY);
+}
+
+/* ------------------------------------------------- per-page filter persistence
+   Each list/report page can store its current filter inputs under
+   `filters:<pageKey>` so the user does not have to re-enter them after
+   navigating away and coming back. Pages call saveFilters() when the
+   form is submitted, and loadFilters() / applyStoredFilters() on init.
+   Clearing the filters calls clearFilters() to wipe the entry. */
+
+function saveFilters(pageKey, values) {
+  try {
+    localStorage.setItem(FILTERS_KEY_PREFIX + pageKey, JSON.stringify(values || {}));
+  } catch {
+    /* storage unavailable - filters apply for this page only */
+  }
+}
+
+function loadFilters(pageKey) {
+  try {
+    return JSON.parse(localStorage.getItem(FILTERS_KEY_PREFIX + pageKey) || '{}');
+  } catch {
+    return {};
+  }
+}
+
+function clearFilters(pageKey) {
+  try {
+    localStorage.removeItem(FILTERS_KEY_PREFIX + pageKey);
+  } catch {
+    /* storage unavailable */
+  }
+}
+
+// Convenience: read every [data-filter-key] control inside the given form
+// element and persist its current value (or empty string if blank).
+function saveFormFilters(pageKey, formEl) {
+  if (!formEl) return;
+  const values = {};
+  formEl.querySelectorAll('[data-filter-key]').forEach((control) => {
+    values[control.getAttribute('data-filter-key')] = control.value || '';
+  });
+  saveFilters(pageKey, values);
+}
+
+// Reverse: restore values from localStorage into the form. Returns the
+// applied values object so the caller can branch on which filters were
+// restored (e.g. to decide whether to auto-submit).
+function applyStoredFilters(pageKey, formEl) {
+  if (!formEl) return {};
+  const values = loadFilters(pageKey);
+  formEl.querySelectorAll('[data-filter-key]').forEach((control) => {
+    const key = control.getAttribute('data-filter-key');
+    if (Object.prototype.hasOwnProperty.call(values, key)) {
+      control.value = values[key];
+    }
+  });
+  return values;
 }
 
 // Protected pages call this on load. Sends the visitor to login.html when
@@ -350,8 +408,74 @@ function initShell(activeKey) {
 
   const logoutBtn = document.getElementById('sidebarLogoutBtn');
   if (logoutBtn) {
-    logoutBtn.addEventListener('click', handleLogout);
+    logoutBtn.addEventListener('click', openLogoutConfirmModal);
   }
+
+  // Inject the shared logout confirmation modal once per page render.
+  // Localised so each page can override strings, but the structure is fixed:
+  // header with title + close X, body with a friendly message, footer with
+  // Cancel + Confirm Logout buttons.
+  if (!document.getElementById('logoutConfirmModal')) {
+    const modal = document.createElement('div');
+    modal.className = 'modal hidden';
+    modal.id = 'logoutConfirmModal';
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-labelledby', 'logoutConfirmTitle');
+    modal.innerHTML =
+      '<div class="modal-card" style="max-width:420px;">' +
+      '<div class="modal-header"><h3 id="logoutConfirmTitle">Confirm Logout</h3>' +
+      '<button type="button" class="modal-close" id="logoutConfirmClose" aria-label="Close">&times;</button></div>' +
+      '<div class="modal-body"><p class="dialog-text">Are you sure you want to log out of the Dairy Milk Collection Management System?</p></div>' +
+      '<div class="modal-footer">' +
+      '<button type="button" class="btn btn-ghost" id="logoutConfirmCancel">Cancel</button>' +
+      '<button type="button" class="btn btn-danger" id="logoutConfirmOk">Logout</button>' +
+      '</div></div>';
+    document.body.appendChild(modal);
+
+    const closeBtn = document.getElementById('logoutConfirmClose');
+    const cancelBtn = document.getElementById('logoutConfirmCancel');
+    const okBtn = document.getElementById('logoutConfirmOk');
+    if (closeBtn) closeBtn.addEventListener('click', closeLogoutConfirmModal);
+    if (cancelBtn) cancelBtn.addEventListener('click', closeLogoutConfirmModal);
+    if (okBtn) okBtn.addEventListener('click', handleLogout);
+
+    modal.addEventListener('click', (event) => {
+      if (event.target === modal) closeLogoutConfirmModal();
+    });
+  }
+
+  // Global ESC handler: closes any open modal that follows the standard
+  // .modal pattern. Wired once on document (idempotent guard).
+  if (!window.__dairyEscWired) {
+    window.__dairyEscWired = true;
+    document.addEventListener('keydown', (event) => {
+      if (event.key !== 'Escape') return;
+      const openModal = Array.from(document.querySelectorAll('.modal:not(.hidden)'))[0];
+      if (!openModal) return;
+      // Prefer a dedicated close button, fall back to any modal-close button.
+      const dedicated = openModal.querySelector('[id$="ModalClose"], [id$="ConfirmClose"], [id$="ConfirmCancel"]');
+      const closeBtn = dedicated || openModal.querySelector('.modal-close');
+      if (closeBtn instanceof HTMLElement) closeBtn.click();
+      else openModal.classList.add('hidden');
+    });
+  }
+}
+
+function openLogoutConfirmModal() {
+  const modal = document.getElementById('logoutConfirmModal');
+  if (modal) {
+    modal.classList.remove('hidden');
+    // Move focus to the Logout button so keyboard users can confirm with Enter
+    // or cancel with Esc (handled by the global listener).
+    const okBtn = document.getElementById('logoutConfirmOk');
+    if (okBtn instanceof HTMLElement) okBtn.focus();
+  }
+}
+
+function closeLogoutConfirmModal() {
+  const modal = document.getElementById('logoutConfirmModal');
+  if (modal) modal.classList.add('hidden');
 }
 
 async function handleLogout() {

@@ -1,18 +1,30 @@
 // Collection history with filters: from/to dates, farmer, shift, milk type.
+// Filter values are persisted under `filters:history` so the user does not
+// have to re-enter them after navigating away and coming back. Clearing the
+// filters wipes the entry and falls back to sensible defaults (current
+// month-to-date for the period inputs).
+
+const HISTORY_FILTER_KEY = 'history';
 
 document.addEventListener('DOMContentLoaded', () => {
   if (!requireAuth()) return;
   initShell('history');
 
-  document.getElementById('fromInput').value = monthStartISO();
-  document.getElementById('toInput').value = todayISO();
+  // Restore previously-applied filters, falling back to the month-to-date
+  // defaults for the period inputs when nothing is stored yet.
+  const form = document.getElementById('historyFilterForm');
+  const restored = applyStoredFilters(HISTORY_FILTER_KEY, form);
+  if (!restored.from) document.getElementById('fromInput').value = monthStartISO();
+  if (!restored.to) document.getElementById('toInput').value = todayISO();
 
   document.getElementById('historyFilterForm').addEventListener('submit', (event) => {
     event.preventDefault();
+    saveFormFilters(HISTORY_FILTER_KEY, form);
     loadHistory();
   });
 
   document.getElementById('clearFiltersBtn').addEventListener('click', () => {
+    clearFilters(HISTORY_FILTER_KEY);
     document.getElementById('fromInput').value = monthStartISO();
     document.getElementById('toInput').value = todayISO();
     document.getElementById('farmerFilter').value = '';
@@ -21,8 +33,11 @@ document.addEventListener('DOMContentLoaded', () => {
     loadHistory();
   });
 
-  loadFarmerOptions();
-  loadHistory();
+  loadFarmerOptions().then(() => {
+    // Re-apply the stored farmer selection now that the dropdown is populated.
+    if (restored.farmerId) document.getElementById('farmerFilter').value = restored.farmerId;
+    loadHistory();
+  });
 });
 
 async function loadFarmerOptions() {

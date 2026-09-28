@@ -1,41 +1,69 @@
 // Reports page: Daily, Monthly and Date Range tabs. Every report can be
 // exported as PDF; the date range report also exports to Excel. The farmer
 // statement lives on its own dedicated page (statement.html / js/statement.js).
+//
+// Filter inputs are persisted under `filters:reports` so the user's last
+// values are restored on the next visit; the active tab is stored under
+// `filters:reports:tab` so the user lands on the report they were last viewing.
 
 const MONTH_NAMES = [
   'January', 'February', 'March', 'April', 'May', 'June',
   'July', 'August', 'September', 'October', 'November', 'December'
 ];
 
+const REPORTS_FILTER_KEY = 'reports';
+const REPORTS_TAB_KEY = 'reports:tab';
+
 document.addEventListener('DOMContentLoaded', () => {
   if (!requireAuth()) return;
   initShell('reports');
 
-  // Defaults.
-  document.getElementById('dailyDate').value = todayISO();
+  // Restore persisted filter values, falling back to sensible defaults
+  // for any field that was never stored or has been cleared.
+  const restored = applyStoredFilters(REPORTS_FILTER_KEY, document);
+  if (!restored.dailyDate) document.getElementById('dailyDate').value = todayISO();
   const now = new Date();
   document.getElementById('monthlyMonth').innerHTML = MONTH_NAMES
     .map((name, index) => '<option value="' + (index + 1) + '">' + name + '</option>')
     .join('');
-  document.getElementById('monthlyMonth').value = String(now.getMonth() + 1);
-  document.getElementById('monthlyYear').value = String(now.getFullYear());
-  document.getElementById('rangeFrom').value = monthStartISO();
-  document.getElementById('rangeTo').value = todayISO();
+  if (!restored.monthlyMonth) document.getElementById('monthlyMonth').value = String(now.getMonth() + 1);
+  if (!restored.monthlyYear) document.getElementById('monthlyYear').value = String(now.getFullYear());
+  if (!restored.rangeFrom) document.getElementById('rangeFrom').value = monthStartISO();
+  if (!restored.rangeTo) document.getElementById('rangeTo').value = todayISO();
 
-  // Tab switching.
-  document.querySelectorAll('.tab-btn').forEach((button) => {
-    button.addEventListener('click', () => {
-      document.querySelectorAll('.tab-btn').forEach((b) => b.classList.remove('active'));
-      button.classList.add('active');
+  // Tab switching with persistence of the active tab id.
+  const savedTab = loadFilters(REPORTS_TAB_KEY).tab;
+  const tabButtons = document.querySelectorAll('.tab-btn');
+  tabButtons.forEach((button) => {
+    const activate = (tabId) => {
+      tabButtons.forEach((b) => b.classList.remove('active'));
+      const target = document.querySelector('.tab-btn[data-tab="' + tabId + '"]');
+      if (target) target.classList.add('active');
       document.querySelectorAll('.tab-panel').forEach((panel) => panel.classList.add('hidden'));
-      document.getElementById('panel-' + button.dataset.tab).classList.remove('hidden');
-    });
+      const panel = document.getElementById('panel-' + tabId);
+      if (panel) panel.classList.remove('hidden');
+      saveFilters(REPORTS_TAB_KEY, { tab: tabId });
+    };
+    button.addEventListener('click', () => activate(button.dataset.tab));
+    if (savedTab === button.dataset.tab) activate(button.dataset.tab);
   });
 
-  // Report generation.
-  document.getElementById('dailyForm').addEventListener('submit', (e) => { e.preventDefault(); generateDaily(); });
-  document.getElementById('monthlyForm').addEventListener('submit', (e) => { e.preventDefault(); generateMonthly(); });
-  document.getElementById('rangeForm').addEventListener('submit', (e) => { e.preventDefault(); generateRange(); });
+  // Report generation - persist filters on submit before triggering.
+  document.getElementById('dailyForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    saveFormFilters(REPORTS_FILTER_KEY, document.getElementById('dailyForm'));
+    generateDaily();
+  });
+  document.getElementById('monthlyForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    saveFormFilters(REPORTS_FILTER_KEY, document.getElementById('monthlyForm'));
+    generateMonthly();
+  });
+  document.getElementById('rangeForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    saveFormFilters(REPORTS_FILTER_KEY, document.getElementById('rangeForm'));
+    generateRange();
+  });
 
   // Exports.
   document.getElementById('dailyPdfBtn').addEventListener('click', () =>

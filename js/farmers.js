@@ -1,9 +1,13 @@
 // Farmer management: list, search, add, edit, deactivate and delete.
+// The current search term is persisted under `filters:farmers` so the user
+// does not have to re-type it after navigating away and back. Clearing the
+// search field removes the stored value.
+
+const FARMERS_FILTER_KEY = 'farmers';
 
 let farmersCache = [];
 let editingFarmerId = null; // MongoDB _id of farmer being edited
 let deletingFarmerId = null;
-let searchTimer = null;
 
 document.addEventListener('DOMContentLoaded', () => {
   if (!requireAuth()) return;
@@ -20,13 +24,26 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   document.getElementById('deleteConfirmBtn').addEventListener('click', handleDeleteConfirm);
 
-  document.getElementById('searchInput').addEventListener('input', (event) => {
+  // Restore the previously-typed search term, if any.
+  const restored = loadFilters(FARMERS_FILTER_KEY);
+  const searchInput = document.getElementById('searchInput');
+  if (restored.search) searchInput.value = restored.search;
+
+  let searchTimer = null;
+  searchInput.addEventListener('input', (event) => {
     const term = event.target.value.trim();
     clearTimeout(searchTimer);
-    searchTimer = setTimeout(() => loadFarmers(term), 300);
+    searchTimer = setTimeout(() => {
+      // Persist on every debounce so even mid-typing the page can be safely
+      // reloaded without losing the latest input.
+      saveFilters(FARMERS_FILTER_KEY, { search: term });
+      loadFarmers(term);
+    }, 300);
   });
 
-  loadFarmers();
+  // Initial load - use restored term so the list reflects the user's last
+  // search.
+  loadFarmers(restored.search || '');
 });
 
 async function loadFarmers(search = '') {

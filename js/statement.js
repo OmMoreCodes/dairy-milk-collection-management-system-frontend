@@ -1,21 +1,34 @@
 // Dedicated farmer statement page: pick a farmer and a period, then view or
-// export the statement as PDF.
+// export the statement as PDF. The last selected farmer and period are
+// persisted under `filters:statement` so the user does not need to re-pick
+// them after navigating away.
+
+const STATEMENT_FILTER_KEY = 'statement';
 
 document.addEventListener('DOMContentLoaded', () => {
   if (!requireAuth()) return;
   initShell('statement');
 
-  document.getElementById('fromInput').value = monthStartISO();
-  document.getElementById('toInput').value = todayISO();
+  const form = document.getElementById('statementForm');
+  const restored = applyStoredFilters(STATEMENT_FILTER_KEY, form);
+  if (!restored.from) document.getElementById('fromInput').value = monthStartISO();
+  if (!restored.to) document.getElementById('toInput').value = todayISO();
 
   document.getElementById('statementForm').addEventListener('submit', (event) => {
     event.preventDefault();
+    saveFormFilters(STATEMENT_FILTER_KEY, form);
     generateStatement();
   });
 
-  document.getElementById('pdfBtn').addEventListener('click', handleExportPdf);
+  document.getElementById('pdfBtn').addEventListener('click', () => {
+    saveFormFilters(STATEMENT_FILTER_KEY, form);
+    handleExportPdf();
+  });
 
-  loadFarmers();
+  loadFarmers().then(() => {
+    // Re-apply the stored farmer selection now that the dropdown is populated.
+    if (restored.farmerId) document.getElementById('farmerSelect').value = restored.farmerId;
+  });
 });
 
 async function loadFarmers() {
