@@ -28,21 +28,21 @@
           <form id="historyFilterForm" class="filter-bar" novalidate>
             <div class="form-group">
               <label for="fromInput">From</label>
-              <input type="date" id="fromInput" class="form-control" required />
+              <input type="date" id="fromInput" class="form-control" data-filter-key="from" required />
             </div>
             <div class="form-group">
               <label for="toInput">To</label>
-              <input type="date" id="toInput" class="form-control" required />
+              <input type="date" id="toInput" class="form-control" data-filter-key="to" required />
             </div>
             <div class="form-group">
               <label for="farmerFilter">Farmer</label>
-              <select id="farmerFilter" class="form-control">
+              <select id="farmerFilter" class="form-control" data-filter-key="farmerId">
                 <option value="">All farmers</option>
               </select>
             </div>
             <div class="form-group" style="min-width: 130px;">
               <label for="shiftFilter">Shift</label>
-              <select id="shiftFilter" class="form-control">
+              <select id="shiftFilter" class="form-control" data-filter-key="shift">
                 <option value="">All shifts</option>
                 <option value="Morning">Morning</option>
                 <option value="Evening">Evening</option>
@@ -50,7 +50,7 @@
             </div>
             <div class="form-group" style="min-width: 130px;">
               <label for="milkTypeFilter">Milk Type</label>
-              <select id="milkTypeFilter" class="form-control">
+              <select id="milkTypeFilter" class="form-control" data-filter-key="milkType">
                 <option value="">All types</option>
                 <option value="Cow">Cow</option>
                 <option value="Buffalo">Buffalo</option>

@@ -28,17 +28,17 @@
           <form class="filter-bar" id="statementForm" novalidate>
             <div class="form-group" style="min-width: 260px;">
               <label for="farmerSelect">Farmer</label>
-              <select id="farmerSelect" class="form-control" required>
+              <select id="farmerSelect" class="form-control" data-filter-key="farmerId" required>
                 <option value="">Select a farmer</option>
               </select>
             </div>
             <div class="form-group">
               <label for="fromInput">From</label>
-              <input type="date" id="fromInput" class="form-control" required />
+              <input type="date" id="fromInput" class="form-control" data-filter-key="from" required />
             </div>
             <div class="form-group">
               <label for="toInput">To</label>
-              <input type="date" id="toInput" class="form-control" required />
+              <input type="date" id="toInput" class="form-control" data-filter-key="to" required />
             </div>
             <div class="filter-actions">
               <button type="submit" class="btn btn-primary">Generate Statement</button>
