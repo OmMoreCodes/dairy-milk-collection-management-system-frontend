@@ -44,6 +44,7 @@ Runs `tests/test-finishing.js` (22 checks). It loads the real `js/common.js` int
 ```
 frontend/
 ├── *.html             # 11 pages
+├── favicon.svg        # browser tab icon (milk-drop brand mark)
 ├── css/style.css      # design system, light + dark theme
 ├── js/
 │   ├── config.js      # API_BASE_URL (single definition)
