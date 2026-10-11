@@ -3,6 +3,7 @@
 Frontend for the Dairy Milk Collection Management System, built with **HTML5, CSS3 and vanilla JavaScript** (no frameworks). 11 HTML pages, one stylesheet and 10 JavaScript files.
 
 The matching REST API lives in the sibling `backend/` folder of this project.
+[![Netlify Status](https://api.netlify.com/api/v1/badges/aed53d78-0774-4735-bfdd-b39985cbe928/deploy-status)](https://app.netlify.com/projects/milk-collection-management-system/deploys)
 
 ## Run
 
