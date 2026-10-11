@@ -1,1 +1,1 @@
-const API_BASE_URL = 'http://localhost:5000';
+const API_BASE_URL = 'https://dairy-milk-collection-management-system.onrender.com';
